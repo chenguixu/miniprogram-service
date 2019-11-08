@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.UserPoemCommentMapper">
+  <resultMap id="BaseResultMap" type="com.poetry.entity.PoemComment">
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="POEM_ID" jdbcType="INTEGER" property="poemId" />
+    <result column="OPEN_ID" jdbcType="VARCHAR" property="openId" />
+    <result column="COMMENT" jdbcType="VARCHAR" property="comment" />
+    <result column="COMMENT_TIME" jdbcType="VARCHAR" property="commentTime" />
+  </resultMap>
+
+  <resultMap id="resultMap" type="com.poetry.entity.PoemComment">
+    <result column="COMMENT" jdbcType="VARCHAR" property="comment" />
+    <result column="COMMENT_TIME" jdbcType="VARCHAR" property="commentTime" />
+    <association property="user" javaType="com.poetry.entity.PoemUser" column="OPEN_ID" select="com.poetry.mapper.PoemUserMapper.selectInfoByOpenId"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, POEM_ID, OPEN_ID, COMMENT, COMMENT_TIME
+  </sql>
+
+  <!--获取指定诗的评论数-->
+  <select id="countComment" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select count(ID) FROM USER_POEM_COMMENT WHERE POEM_ID=#{poemId}
+  </select>
+
+  <!--获取指定诗的评论-->
+  <select id="getPoemComments" parameterType="java.lang.Integer" resultMap="resultMap">
+    select COMMENT,COMMENT_TIME,OPEN_ID FROM USER_POEM_COMMENT WHERE POEM_ID=#{poemId}
+  </select>
+
+
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from USER_POEM_COMMENT
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from USER_POEM_COMMENT
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.poetry.entity.PoemComment">
+    insert into USER_POEM_COMMENT (ID, POEM_ID, OPEN_ID,
+      COMMENT, COMMENT_TIME)
+    values (#{id,jdbcType=INTEGER}, #{poemId,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR}, 
+      #{comment,jdbcType=VARCHAR}, #{commentTime,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.poetry.entity.PoemComment">
+    insert into USER_POEM_COMMENT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="poemId != null">
+        POEM_ID,
+      </if>
+      <if test="openId != null">
+        OPEN_ID,
+      </if>
+      <if test="comment != null">
+        COMMENT,
+      </if>
+      <if test="commentTime != null">
+        COMMENT_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="poemId != null">
+        #{poemId,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null">
+        #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="comment != null">
+        #{comment,jdbcType=VARCHAR},
+      </if>
+      <if test="commentTime != null">
+        #{commentTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.poetry.entity.PoemComment">
+    update USER_POEM_COMMENT
+    <set>
+      <if test="poemId != null">
+        POEM_ID = #{poemId,jdbcType=INTEGER},
+      </if>
+      <if test="openId != null">
+        OPEN_ID = #{openId,jdbcType=VARCHAR},
+      </if>
+      <if test="comment != null">
+        COMMENT = #{comment,jdbcType=VARCHAR},
+      </if>
+      <if test="commentTime != null">
+        COMMENT_TIME = #{commentTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.poetry.entity.PoemComment">
+    update USER_POEM_COMMENT
+    set POEM_ID = #{poemId,jdbcType=INTEGER},
+      OPEN_ID = #{openId,jdbcType=VARCHAR},
+      COMMENT = #{comment,jdbcType=VARCHAR},
+      COMMENT_TIME = #{commentTime,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.TangMapper">
+  <resultMap id="BaseResultMap" type="com.poetry.entity.Tang">
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="POEM" jdbcType="VARCHAR" property="poem" />
+    <result column="STRAINS" jdbcType="VARCHAR" property="strains" />
+    <result column="POINT" jdbcType="INTEGER" property="point"/>
+    <association property="poet" javaType="com.poetry.entity.Poet" column="AUTHOR_NUM" select="com.poetry.mapper.PoetMapper.getPoetByNum">
+
+    </association>
+  </resultMap>
+
+  <resultMap id="resultMap" type="java.util.HashMap">
+    <id column="ID" jdbcType="INTEGER" property="id"/>
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="POEM" jdbcType="VARCHAR" property="poem" />
+    <result column="POINT" jdbcType="INTEGER" property="point"></result>
+    <association property="countCommet" column="ID" select="com.poetry.mapper.PoemCommentMapper.countComment"/>
+    <association property="poetName" column="AUTHOR_NUM" select="com.poetry.mapper.PoetMapper.getPoetNameByNum"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, TITLE, POEM, STRAINS, AUTHOR_NUM,POINT
+  </sql>
+
+  <!--根据关键字查询指定的字段-->
+  <select id="getTangInfoListByPage" parameterType="java.lang.String" resultMap="resultMap">
+     select ID,TITLE,POEM,POINT,AUTHOR_NUM from tang t
+    <if test="keyWord!=null">
+      where t.TITLE like '%${keyWord}%' or t.POEM like '%${keyWord}%'
+    </if>
+  </select>
+
+  <!--根据诗人编码查询指定字段-->
+  <select id="getPoemInfoByPoetNum" parameterType="java.lang.String" resultMap="resultMap">
+        select ID,TITLE,POEM,POINT,AUTHOR_NUM from tang where AUTHOR_NUM=#{num}
+    </select>
+
+  <!--点赞指定诗-->
+  <update id="pointPoem" parameterType="java.lang.Integer">
+    UPDATE tang set POINT=(POINT+1) WHERE ID=#{id}
+  </update>
+
+  <select id="getAllTangListByPage" resultMap="BaseResultMap">
+     select * from tang
+  </select>
+
+  <select id="getPoemByPageAndKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+     select * from tang t
+     <if test="keyWord!=null">
+       where t.TITLE like '%${keyWord}%' or t.POEM like '%${keyWord}%'
+     </if>
+  </select>
+
+
+    <select id="getPoemByPoetNum" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from tang where AUTHOR_NUM=#{num}
+    </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tang
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tang
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.poetry.entity.Tang">
+    insert into tang (ID, TITLE, POEM, 
+      AUTHOR, STRAINS, AUTHOR_NUM
+      )
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{poem,jdbcType=VARCHAR}, 
+      #{author,jdbcType=VARCHAR}, #{strains,jdbcType=VARCHAR}, #{authorNum,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.poetry.entity.Tang">
+    insert into tang
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="title != null">
+        TITLE,
+      </if>
+      <if test="poem != null">
+        POEM,
+      </if>
+      <if test="author != null">
+        AUTHOR,
+      </if>
+      <if test="strains != null">
+        STRAINS,
+      </if>
+      <if test="authorNum != null">
+        AUTHOR_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="poem != null">
+        #{poem,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null">
+        #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="strains != null">
+        #{strains,jdbcType=VARCHAR},
+      </if>
+      <if test="authorNum != null">
+        #{authorNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.poetry.entity.Tang">
+    update tang
+    <set>
+      <if test="title != null">
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="poem != null">
+        POEM = #{poem,jdbcType=VARCHAR},
+      </if>
+      <if test="author != null">
+        AUTHOR = #{author,jdbcType=VARCHAR},
+      </if>
+      <if test="strains != null">
+        STRAINS = #{strains,jdbcType=VARCHAR},
+      </if>
+      <if test="authorNum != null">
+        AUTHOR_NUM = #{authorNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.poetry.entity.Tang">
+    update tang
+    set TITLE = #{title,jdbcType=VARCHAR},
+      POEM = #{poem,jdbcType=VARCHAR},
+      AUTHOR = #{author,jdbcType=VARCHAR},
+      STRAINS = #{strains,jdbcType=VARCHAR},
+      AUTHOR_NUM = #{authorNum,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

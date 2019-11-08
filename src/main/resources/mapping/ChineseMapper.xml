@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.poetry.mapper.ChineseMapper">
+  <resultMap id="BaseResultMap" type="com.poetry.entity.Chinese">
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="WORD" jdbcType="VARCHAR" property="word" />
+    <result column="OLDWORD" jdbcType="VARCHAR" property="oldword" />
+    <result column="STROKES" jdbcType="INTEGER" property="strokes" />
+    <result column="PINYIN" jdbcType="VARCHAR" property="pinyin" />
+    <result column="RADICALS" jdbcType="VARCHAR" property="radicals" />
+    <result column="EXPLANATION" jdbcType="VARCHAR" property="explanation" />
+    <result column="MORE" jdbcType="VARCHAR" property="more" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, WORD, OLDWORD, STROKES, PINYIN, RADICALS, EXPLANATION, MORE
+  </sql>
+
+  <select id="getChineseByPage" resultMap="BaseResultMap">
+    select * from Chinese
+    <if test="key!=''">
+      where WORD = #{key} or OLDWORD = #{key} or PINYIN = #{key} or RADICALS = #{key} ORDER BY STROKES ASC
+    </if>
+  </select>
+
+  <select id="getWordsByIds" resultType="java.lang.String">
+    select WORD from Chinese where ID in <foreach collection="ids" item="id" open="(" close=")" separator=",">
+    #{id}
+  </foreach>
+  </select>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from Chinese
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from Chinese
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.poetry.entity.Chinese">
+    insert into Chinese (ID, WORD, OLDWORD, 
+      STROKES, PINYIN, RADICALS, 
+      EXPLANATION, MORE)
+    values (#{id,jdbcType=INTEGER}, #{word,jdbcType=VARCHAR}, #{oldword,jdbcType=VARCHAR}, 
+      #{strokes,jdbcType=VARCHAR}, #{pinyin,jdbcType=VARCHAR}, #{radicals,jdbcType=VARCHAR}, 
+      #{explanation,jdbcType=VARCHAR}, #{more,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.poetry.entity.Chinese">
+    insert into Chinese
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="word != null">
+        WORD,
+      </if>
+      <if test="oldword != null">
+        OLDWORD,
+      </if>
+      <if test="strokes != null">
+        STROKES,
+      </if>
+      <if test="pinyin != null">
+        PINYIN,
+      </if>
+      <if test="radicals != null">
+        RADICALS,
+      </if>
+      <if test="explanation != null">
+        EXPLANATION,
+      </if>
+      <if test="more != null">
+        MORE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="word != null">
+        #{word,jdbcType=VARCHAR},
+      </if>
+      <if test="oldword != null">
+        #{oldword,jdbcType=VARCHAR},
+      </if>
+      <if test="strokes != null">
+        #{strokes,jdbcType=VARCHAR},
+      </if>
+      <if test="pinyin != null">
+        #{pinyin,jdbcType=VARCHAR},
+      </if>
+      <if test="radicals != null">
+        #{radicals,jdbcType=VARCHAR},
+      </if>
+      <if test="explanation != null">
+        #{explanation,jdbcType=VARCHAR},
+      </if>
+      <if test="more != null">
+        #{more,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.poetry.entity.Chinese">
+    update Chinese
+    <set>
+      <if test="word != null">
+        WORD = #{word,jdbcType=VARCHAR},
+      </if>
+      <if test="oldword != null">
+        OLDWORD = #{oldword,jdbcType=VARCHAR},
+      </if>
+      <if test="strokes != null">
+        STROKES = #{strokes,jdbcType=VARCHAR},
+      </if>
+      <if test="pinyin != null">
+        PINYIN = #{pinyin,jdbcType=VARCHAR},
+      </if>
+      <if test="radicals != null">
+        RADICALS = #{radicals,jdbcType=VARCHAR},
+      </if>
+      <if test="explanation != null">
+        EXPLANATION = #{explanation,jdbcType=VARCHAR},
+      </if>
+      <if test="more != null">
+        MORE = #{more,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.poetry.entity.Chinese">
+    update Chinese
+    set WORD = #{word,jdbcType=VARCHAR},
+      OLDWORD = #{oldword,jdbcType=VARCHAR},
+      STROKES = #{strokes,jdbcType=VARCHAR},
+      PINYIN = #{pinyin,jdbcType=VARCHAR},
+      RADICALS = #{radicals,jdbcType=VARCHAR},
+      EXPLANATION = #{explanation,jdbcType=VARCHAR},
+      MORE = #{more,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
